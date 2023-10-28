@@ -1,38 +1,36 @@
 package ru.practicum.shareit.user.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 
-@Service
-public class UserService {
-    @Qualifier("userInMemmory")
-    private final UserStorage userStorage;
+/*
+    Интерфейс сервиса для управления сущностью пользователь
+ */
+public interface UserService {
+    /*
+        Создать пользователя
+     */
+    UserDto createUser(User user);
 
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    /*
+        Удалить пользователя
+     */
+    void deleteUser(Long id);
 
-    public User createUser(User user) {
-        return userStorage.createUser(user);
-    }
+    /*
+        Обновить пользователя
+     */
+    UserDto updateUser(Long id, User user);
 
-    public void deleteUser(int id) {
-        userStorage.deleteUser(id);
-    }
+    /*
+        Получить всех пользователей
+     */
+    List<UserDto> getAllUsers();
 
-    public User updateUser(int id, User user) {
-        return userStorage.updateUser(id, user);
-    }
-
-    public List<User> getAllUsers() {
-        return userStorage.getAllUser();
-    }
-
-    public User getUserById(int id) {
-        return userStorage.getUserById(id);
-    }
+    /*
+        Получить пользователя по id
+     */
+    UserDto getUserById(Long id);
 }

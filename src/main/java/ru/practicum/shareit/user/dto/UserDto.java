@@ -1,13 +1,21 @@
 package ru.practicum.shareit.user.dto;
 
-import ru.practicum.shareit.user.model.User;
+import lombok.Builder;
+import lombok.Data;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
+/*
+    Сущность DTO пользователя
+*/
+@Data
+@Builder
 public class UserDto {
-    public static User toUserDto(User user) {
-        return User.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-    }
+    private Long id;
+    @NotBlank
+    private String name;
+    @Email(message = "Электронная почта не может быть пустой и должна содержать символ @")
+    @NotBlank
+    private String email;
 }
