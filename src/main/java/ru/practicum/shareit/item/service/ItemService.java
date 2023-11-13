@@ -1,46 +1,44 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
+import ru.practicum.shareit.item.dto.comment.CommentDto;
+import ru.practicum.shareit.item.dto.item.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 
 /*
-    Сервис для управления предметами
+    Интерфейс сервиса для управления сущностью предмета
  */
-@Service
-public class ItemService {
-    @Qualifier("itemInMemmory")
-    private final ItemStorage itemStorage;
-    @Qualifier("userInMemmory")
-    private final UserStorage userStorage;
+public interface ItemService {
 
-    public ItemService(ItemStorage itemStorage, UserStorage userStorage) {
-        this.itemStorage = itemStorage;
-        this.userStorage = userStorage;
-    }
+    /*
+        Создать предмет
+     */
+    ItemDto createItem(Long idOwner, Item item);
 
-    public Item createItem(int userId, Item item) {
-        userStorage.getUserById(userId);
-        return itemStorage.addItem(userId, item);
-    }
+    /*
+        Обновить предмет
+     */
+    ItemDto updateItem(Long idItem, Item item, Long idOfUserBeingEdited);
 
-    public Item updateItem(int idItem, Item item, int idOfUserBeingEdited) {
-        return itemStorage.updateItem(idItem, item, idOfUserBeingEdited);
-    }
+    /*
+        Получить предмет по id
+     */
+    ItemDto getItemById(Long itemId, Long idUser);
 
-    public Item getItemById(int itemId) {
-        return itemStorage.getItemById(itemId);
-    }
+    /*
+        Получить предметы по id владельца
+     */
+    List<ItemDto> getItemByUser(Long userId);
 
-    public List<Item> getItemByUser(int userId) {
-        return itemStorage.getItemByUser(userId);
-    }
+    /*
+        Поиск предмета по названию и описанию
+     */
+    List<ItemDto> searchItem(String textQuery);
 
-    public List<Item> searchItem(String textQuery) {
-        return itemStorage.searchItem(textQuery);
-    }
+    /*
+        Создать отзыв
+     */
+    CommentDto createComment(Long itemId, Long userId, Comment comment);
 }
