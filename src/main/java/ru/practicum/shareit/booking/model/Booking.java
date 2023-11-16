@@ -37,12 +37,10 @@ public class Booking implements Comparable<Booking> {
     private Long id; // id бронирования
 
     @NotNull
-    //@Future
     @Column(name = "start_booking")
     private LocalDateTime start; // начало бронирования
 
     @NotNull
-    //@Future
     @Column(name = "end_booking")
     private LocalDateTime end; // конец бронирования
 

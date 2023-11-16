@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.booking.service.BookingServiceImpl;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /*
@@ -62,9 +62,11 @@ public class BookingController {
     */
     @GetMapping()
     public List<BookingDtoOut> getUserBookings(@RequestParam(name = "state", defaultValue = "ALL") String state,
-                                               @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                               @RequestHeader("X-Sharer-User-Id") Long userId,
+                                               @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+                                               @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Выполняется GET-запрос. Получить бронирования пользователя.");
-        return bookingServiceImpl.getUserBookings(state, userId);
+        return bookingServiceImpl.getUserBookings(state, userId, from, size);
     }
 
     /*
@@ -72,9 +74,11 @@ public class BookingController {
     */
     @GetMapping("/owner")
     public List<BookingDtoOut> getOwnerBookings(@RequestParam(name = "state", defaultValue = "ALL") String state,
-                                                @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                @RequestHeader("X-Sharer-User-Id") Long userId,
+                                                @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+                                                @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Выполняется GET-запрос. Получить бронирования владельца.");
-        return bookingServiceImpl.getOwnerBookings(state, userId);
+        return bookingServiceImpl.getOwnerBookings(state, userId, from, size);
     }
 
 }

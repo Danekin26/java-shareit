@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.dto.item;
 
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,29 +11,47 @@ import java.util.List;
 */
 public class ItemDtoMapper {
     public static ItemDto itemToDto(Item item) {
-        return ItemDto.builder()
+        ItemDto itemDto = ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .build();
+        if (item.getRequest() == null) {
+            itemDto.setRequestId(null);
+        } else {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
+
+        return itemDto;
     }
 
-    public static Item dtoToItem(ItemDto itemDto, User owner) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .owner(owner)
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
+    public static Item itemDtoInToItem(ItemDtoIn itemDtoIn, ItemRequest itemRequest) {
+        Item item = Item.builder()
+                .name(itemDtoIn.getName())
+                .description(itemDtoIn.getDescription())
+                .available(itemDtoIn.getAvailable())
                 .build();
+        if (itemRequest != null) item.setRequest(itemRequest);
+        return item;
     }
 
     public static List<ItemDto> allTemByAllItemDto(List<Item> allItem) {
         List<ItemDto> allItemDto = new ArrayList<>();
+        if (allItem == null) return allItemDto;
         for (Item item : allItem) {
             allItemDto.add(itemToDto(item));
         }
         return allItemDto;
+    }
+
+    public static ItemDtoIn itemToItemDtoIn(Item item) {
+        return ItemDtoIn.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequest().getId())
+                .build();
     }
 }

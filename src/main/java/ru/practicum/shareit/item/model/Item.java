@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
@@ -55,5 +56,7 @@ public class Item {
     @JsonIgnore
     private User owner; // владелец вещи
 
-    //private ItemRequest request; // ссылка на созданную вещь по запросу
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_request")
+    private ItemRequest request; // ссылка на созданную вещь по запросу
 }

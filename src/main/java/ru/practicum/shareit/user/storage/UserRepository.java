@@ -9,4 +9,9 @@ import ru.practicum.shareit.user.model.User;
 */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    /*
+        Получить пользователя по email
+     */
+    User findByEmail(String email);
 }
