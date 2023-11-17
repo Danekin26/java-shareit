@@ -15,7 +15,7 @@ public enum StateSearch {
 
     public static StateSearch getEnumValue(String state) {
         try {
-            return StateSearch.valueOf(state);
+            return StateSearch.valueOf(state.toUpperCase());
         } catch (Exception e) {
             throw new InvalidDataEnteredException(state + " статус не существует");
         }

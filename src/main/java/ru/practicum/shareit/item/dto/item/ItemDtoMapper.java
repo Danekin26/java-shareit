@@ -16,13 +16,8 @@ public class ItemDtoMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId((item.getRequest() == null) ? null : item.getRequest().getId())
                 .build();
-        if (item.getRequest() == null) {
-            itemDto.setRequestId(null);
-        } else {
-            itemDto.setRequestId(item.getRequest().getId());
-        }
-
         return itemDto;
     }
 

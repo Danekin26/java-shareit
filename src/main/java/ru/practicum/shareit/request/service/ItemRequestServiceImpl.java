@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicationOfExistingDataException;
 import ru.practicum.shareit.exception.InvalidDataEnteredException;
@@ -53,11 +54,16 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoOut> getRequestsCreatedOtherUsers(Long userId, Integer from, Integer size) {
-        if (from < 0 || size < 1) throw new InvalidDataEnteredException("size и from введены не корректно");
-        User user = userRepository.findById(userId).orElseThrow(()
-                -> new DuplicationOfExistingDataException(String.format("Пользователь с id %d не существует", userId)));
-        List<ItemRequest> allItemRequest = itemRequestRepository.findAllByRequestor_IdNotOrderByCreatedDesc(
-                userId, PageRequest.of(from / size, size));
+        Pageable pageable = PageRequest.of(from / size, size);
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(()
+                        -> new DuplicationOfExistingDataException(String.format("Пользователь с id %d не существует", userId)));
+        if (from < 0 || size < 1) {
+            throw new InvalidDataEnteredException("size и from введены не корректно");
+        }
+        List<ItemRequest> allItemRequest = itemRequestRepository
+                .findAllByRequestor_IdNotOrderByCreatedDesc(userId, pageable);
         for (ItemRequest itemRequest : allItemRequest) {
             setItemRequest(itemRequest);
         }
