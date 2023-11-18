@@ -11,10 +11,13 @@ import ru.practicum.shareit.exception.InvalidDataEnteredException;
 import ru.practicum.shareit.exception.LackOfRequestedDataException;
 import ru.practicum.shareit.item.dto.comment.CommentDto;
 import ru.practicum.shareit.item.dto.item.ItemDto;
+import ru.practicum.shareit.item.dto.item.ItemDtoIn;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
@@ -27,6 +30,7 @@ import static ru.practicum.shareit.booking.dto.BookingDtopMapper.bookingToBookin
 import static ru.practicum.shareit.item.dto.comment.CommentDtoMapper.allComentToAllCommentDto;
 import static ru.practicum.shareit.item.dto.comment.CommentDtoMapper.commentToCommentDto;
 import static ru.practicum.shareit.item.dto.item.ItemDtoMapper.allTemByAllItemDto;
+import static ru.practicum.shareit.item.dto.item.ItemDtoMapper.itemDtoInToItem;
 import static ru.practicum.shareit.item.dto.item.ItemDtoMapper.itemToDto;
 
 /*
@@ -39,13 +43,24 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
-    public ItemDto createItem(Long idOwner, Item item) {
-        item.setOwner(userRepository.findById(idOwner).orElseThrow(()
-                -> new LackOfRequestedDataException(String.format("Пользователя с id %d не существует", idOwner))));
-        return itemToDto(itemRepository.save(item));
+    public ItemDto createItem(Long idOwner, ItemDtoIn item) {
+        ItemRequest itemRequest = null;
+        if (item.getRequestId() != null) {
+            itemRequest = itemRequestRepository.findById(item.getRequestId()).orElseThrow(()
+                    -> new LackOfRequestedDataException(String.format("Запроса с id %d не существует", item.getRequestId())));
+        }
+        User owner = userRepository.findById(idOwner).orElseThrow(()
+                -> new LackOfRequestedDataException(String.format("Пользователя с id %d не существует", idOwner)));
+
+        Item endItem = itemDtoInToItem(item, itemRequest);
+
+
+        endItem.setOwner(owner);
+        return itemToDto(itemRepository.save(endItem));
     }
 
     @Override

@@ -37,6 +37,7 @@ public class User {
 
     @NotNull
     @Email(message = "Электронная почта не может быть пустой и должна содержать символ @")
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
+
     private String email; // email пользователя
 }

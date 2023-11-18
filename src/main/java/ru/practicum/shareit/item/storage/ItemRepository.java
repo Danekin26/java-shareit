@@ -22,4 +22,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByAvailableAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(boolean available,
                                                                                               String description,
                                                                                               String name);
+
+    /*
+        Получить все предметы по id запроса
+     */
+    List<Item> findAllByRequest_Id(Long requestId);
 }

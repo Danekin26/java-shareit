@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.storage;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,7 +21,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "FROM Booking AS b " +
             "WHERE b.booker.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllBookingsByUserIdUser(Long userId);
+    List<Booking> findAllBookingsByUserIdUser(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом PAST пользователя
@@ -31,7 +31,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE current_timestamp > b.end " +
             "AND b.booker.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findUserBookingsByPast(Long userId);
+    List<Booking> findUserBookingsByPast(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом FUTURE пользователя
@@ -41,7 +41,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.booker.id = ?1 " +
             "AND b.start > ?2 " +
             "ORDER BY b.start DESC")
-    List<Booking> findUserBookingsByFuture(Long userId, LocalDateTime nowTime);
+    List<Booking> findUserBookingsByFuture(Long userId, LocalDateTime nowTime, Pageable pageable);
 
     /*
         Получить все бронирования со статусом CURRENT пользователя
@@ -51,7 +51,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.booker.id = ?1 " +
             "AND current_timestamp BETWEEN b.start AND b.end " +
             "ORDER BY b.start DESC")
-    List<Booking> findUserBookingsByCurrent(Long userId, Sort start);
+    List<Booking> findUserBookingsByCurrent(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом WATTING пользователя
@@ -61,7 +61,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.status = 0 " +
             "AND b.booker.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findUserBookingsByWatting(Long userId);
+    List<Booking> findUserBookingsByWatting(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом REJECTED пользователя
@@ -71,7 +71,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.status = 2 " +
             "AND b.booker.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findUserBookingsByRejected(Long userId);
+    List<Booking> findUserBookingsByRejected(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования владельца
@@ -80,7 +80,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "FROM Booking AS b " +
             "WHERE b.item.owner.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllBookingsByOwnerIdOwner(Long ownerId);
+    List<Booking> findAllBookingsByOwnerIdOwner(Long ownerId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом PAST владельца
@@ -90,7 +90,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE current_timestamp > b.end " +
             "AND b.item.owner.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findOwnerBookingsByPast(Long ownerId);
+    List<Booking> findOwnerBookingsByPast(Long ownerId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом FUTURE владельца
@@ -100,7 +100,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.item.owner.id = ?1 " +
             "AND b.start > ?2 " +
             "ORDER BY b.start DESC")
-    List<Booking> findOwnerBookingsByFuture(Long userId, LocalDateTime nowTime);
+    List<Booking> findOwnerBookingsByFuture(Long userId, LocalDateTime nowTime, Pageable pageable);
 
     /*
         Получить все бронирования со статусом CURRENT владельца
@@ -111,7 +111,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.item.owner.id = ?1 " +
             "AND current_timestamp BETWEEN b.start AND b.end " +
             "ORDER BY b.start DESC")
-    List<Booking> findOwnerBookingsByCurrent(Long userId, Sort start);
+    List<Booking> findOwnerBookingsByCurrent(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом WATTING владельца
@@ -121,7 +121,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.status = 0 " +
             "AND b.item.owner.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findOwnerBookingsByWatting(Long userId);
+    List<Booking> findOwnerBookingsByWatting(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования со статусом REJECTED владельца
@@ -131,7 +131,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.status = 2 " +
             "AND b.item.owner.id = ?1 " +
             "ORDER BY b.start DESC")
-    List<Booking> findOwnerBookingsByRejected(Long userId);
+    List<Booking> findOwnerBookingsByRejected(Long userId, Pageable pageable);
 
     /*
         Получить все бронирования по id предмета

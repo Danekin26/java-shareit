@@ -1,7 +1,7 @@
-package ru.practicum.shareit.booking.service;
+package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
@@ -53,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if ((bookingDtoIn.getStart().isAfter(bookingDtoIn.getEnd())) || (bookingDtoIn.getEnd().isBefore(LocalDateTime.now()))
-                || (bookingDtoIn.getStart().equals(bookingDtoIn.getEnd()))) {
+                || (bookingDtoIn.getStart().equals(bookingDtoIn.getEnd())) || bookingDtoIn.getStart().isBefore(LocalDateTime.now())) {
             throw new InvalidDataEnteredException("Некорректно введена дата окончаия и/или начала бронирования");
         }
         Booking booking = dtoToBooking(bookingDtoIn, user, item);
@@ -108,31 +108,33 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<BookingDtoOut> getUserBookings(String stateSearch, Long userId) {
+    public List<BookingDtoOut> getUserBookings(String stateSearch, Long userId, Integer from, Integer size) {
         User user = userRepository.findById(userId).orElseThrow(() -> new LackOfRequestedDataException(
                 String.format("Пользователя с id %d не существует", userId))
         );
+        if (from < 0 || size < 1) throw new InvalidDataEnteredException("size и from введены не корректно");
         List<BookingDtoOut> bookingDto;
         LocalDateTime timeNow = LocalDateTime.now();
+        PageRequest pageRequest = PageRequest.of(from / size, size);
 
         switch (stateSearch) {
             case "ALL":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findAllBookingsByUserIdUser(userId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findAllBookingsByUserIdUser(userId, pageRequest));
                 break;
             case "PAST":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByPast(userId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByPast(userId, pageRequest));
                 break;
             case "FUTURE":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByFuture(userId, timeNow));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByFuture(userId, timeNow, pageRequest));
                 break;
             case "CURRENT":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByCurrent(userId, Sort.by(Sort.Direction.DESC, "start")));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByCurrent(userId, pageRequest));
                 break;
             case "WAITING":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByWatting(userId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByWatting(userId, pageRequest));
                 break;
             case "REJECTED":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByRejected(userId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findUserBookingsByRejected(userId, pageRequest));
                 break;
             default:
                 throw new InvalidDataEnteredException(String.format("Unknown state: %s", stateSearch));
@@ -142,31 +144,33 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<BookingDtoOut> getOwnerBookings(String stateSearch, Long ownerId) {
+    public List<BookingDtoOut> getOwnerBookings(String stateSearch, Long ownerId, Integer from, Integer size) {
         User user = userRepository.findById(ownerId).orElseThrow(() -> new LackOfRequestedDataException(
                 String.format("Пользователя с id %d не существует", ownerId))
         );
         List<BookingDtoOut> bookingDto;
         LocalDateTime timeNow = LocalDateTime.now();
+        if (from < 0 || size < 1) throw new InvalidDataEnteredException("size и from введены не корректно");
+        PageRequest pageRequest = PageRequest.of(from / size, size);
 
         switch (stateSearch) {
             case "ALL":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findAllBookingsByOwnerIdOwner(ownerId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findAllBookingsByOwnerIdOwner(ownerId, pageRequest));
                 break;
             case "PAST":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByPast(ownerId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByPast(ownerId, pageRequest));
                 break;
             case "FUTURE":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByFuture(ownerId, timeNow));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByFuture(ownerId, timeNow, pageRequest));
                 break;
             case "CURRENT":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByCurrent(ownerId, Sort.by(Sort.Direction.DESC, "start")));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByCurrent(ownerId, pageRequest));
                 break;
             case "WAITING":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByWatting(ownerId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByWatting(ownerId, pageRequest));
                 break;
             case "REJECTED":
-                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByRejected(ownerId));
+                bookingDto = allBookingToAllBookingDtoOut(bookingRepository.findOwnerBookingsByRejected(ownerId, pageRequest));
                 break;
             default:
                 throw new NonExistingStatusException(String.format("Unknown state: %s", stateSearch));

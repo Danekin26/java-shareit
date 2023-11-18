@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.comment.CommentDto;
 import ru.practicum.shareit.item.dto.item.ItemDto;
+import ru.practicum.shareit.item.dto.item.ItemDtoIn;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
@@ -15,7 +16,7 @@ public interface ItemService {
     /*
         Создать предмет
      */
-    ItemDto createItem(Long idOwner, Item item);
+    ItemDto createItem(Long idOwner, ItemDtoIn item);
 
     /*
         Обновить предмет
